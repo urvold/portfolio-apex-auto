@@ -1,6 +1,6 @@
 # APEX AUTO
 
-**APEX AUTO 2.0 подготовлен локально в ветке `apex-auto-2.0` и ожидает подтверждения публикации.** Действующая публичная ссылка ниже пока показывает версию 1.0. Обновление, скриншоты, QA и запуск кандидата — [V2-REPORT.md](V2-REPORT.md).
+**APEX AUTO 2.0 опубликован и проверен.** Сборка и deployment: https://github.com/urvold/portfolio-apex-auto/actions/runs/41339224684. Результаты модернизации и QA — [V2-REPORT.md](V2-REPORT.md).
 
 Готовый сайт: **https://urvold.github.io/portfolio-apex-auto/**
 

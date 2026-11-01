@@ -1,6 +1,6 @@
 # Проверка APEX AUTO
 
-**QA версии 2.0 описан отдельно в [V2-REPORT.md](V2-REPORT.md). Версия 2.0 ещё не опубликована. Ниже — история проверки и публикации 1.0.**
+**QA версии 2.0 описан отдельно в [V2-REPORT.md](V2-REPORT.md). Версия 2.0 опубликована; live-проверки выполнены. Ниже — история проверки и публикации 1.0.**
 
 **Текущее состояние на 1 ноября 2026: сайт опубликован — https://urvold.github.io/portfolio-apex-auto/. Ниже сохранены результаты и история этапов.**
 
@@ -69,3 +69,8 @@ Workflow https://github.com/urvold/portfolio-apex-auto/actions/runs/41323098558 
 Проверка внешних URL использовала системную TLS-верификацию urllib. Для браузерной части ответы действующего сайта передавались в Chromium через такой же проверяемый транспорт, поскольку облачный NSS не доверяет служебному прокси. TLS/проверка имени хоста не отключались. Физический iPhone/Safari не тестировался. Новые результаты Lighthouse опубликованного сайта не заявляются.
 
 Артефакты: artifacts/live-check.json, artifacts/live-mobile.png, artifacts/live-desktop.png. Исходник проверки: tests/live_check.py.
+
+
+## Публикация APEX AUTO 2.0
+
+Релиз приложения 05c7939. Build/deploy успешны: https://github.com/urvold/portfolio-apex-auto/actions/runs/41339224684. Публичный адрес: https://urvold.github.io/portfolio-apex-auto/. Все 11 URL и reload, 6 областей анатомии, 7 проектов, touch/pointer capture и остальные взаимодействия проверены; ошибок JavaScript и ресурсов не обнаружено. Подробности и ограничения мобильной эмуляции — V2-REPORT.md.
