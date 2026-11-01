@@ -1,5 +1,7 @@
 # APEX AUTO
 
+**APEX AUTO 2.0 подготовлен локально в ветке `apex-auto-2.0` и ожидает подтверждения публикации.** Действующая публичная ссылка ниже пока показывает версию 1.0. Обновление, скриншоты, QA и запуск кандидата — [V2-REPORT.md](V2-REPORT.md).
+
 Готовый сайт: **https://urvold.github.io/portfolio-apex-auto/**
 
 Авторский демонстрационный сайт вымышленного центра автомобильной эстетики. React 19, TypeScript, Vite, React Router; собственная адаптивная CSS-система, Lucide. Backend, аналитика, трекеры и сбор заявок отсутствуют.
@@ -39,8 +41,8 @@ npm run preview -- --port 4173
 
 ## Структура
 
-- `src/data.ts` — услуги, тарифы, проекты, FAQ.
-- `src/App.tsx` — страницы и повторно используемые компоненты.
+- `src/data.ts` — услуги, тарифы, 7 демонстрационных проектов, FAQ и заметки по уходу; `src/data/anatomy.ts` — интерактивные области; `src/data/imageWidths.ts` — реальные ширины локальных изображений.
+- `src/App.tsx` — страницы и общая композиция; `src/components/` — Hero, Anatomy, Comparison, Gallery и общие UI-элементы.
 - `src/style.css` — токены, сетки, адаптивность, анимации, reduced motion и focus.
 - `src/main.tsx` — клиентский вход и гидратация.
 - `src/entry-server.tsx`, `scripts/prerender.mjs` — генерация HTML всех страниц с уникальными метаданными.

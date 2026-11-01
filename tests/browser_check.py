@@ -1,4 +1,4 @@
-import json, os
+import json, os, re
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 BASE=os.environ.get('APEX_TEST_URL','http://127.0.0.1:5173').rstrip('/')
@@ -27,14 +27,14 @@ with sync_playwright() as p:
  page.get_by_role('button',name='Открыть меню').click();page.get_by_role('navigation').get_by_role('link',name='Услуги',exact=True).click();assert page.url.endswith('/services')
  # calculator
  page.goto(BASE);calc=page.locator('.calc-panel');assert calc.locator('output').inner_text().replace('\u00a0',' ')== '18 000 ₽'
- calc.locator('select').nth(0).select_option('2');calc.locator('select').nth(1).select_option('1.25');calc.get_by_label('Детальная мойка').check();assert '23' in calc.locator('output').inner_text()
+ calc.locator('select').nth(0).select_option('2');calc.locator('select').nth(1).select_option('1.25');calc.get_by_label('Детальная мойка').check();assert calc.locator('output').inner_text().replace('\u00a0',' ')== '23 000 ₽'
  # FAQ
  page.locator('summary').first.click();assert page.locator('details').first.get_attribute('open') is not None
  # compare keyboard
- slider=page.get_by_role('slider');slider.focus();slider.press('ArrowRight');assert slider.input_value()=='53'
+ slider=page.get_by_role('slider');slider.focus();slider.press('ArrowRight');assert slider.get_attribute('aria-valuenow')=='53'
  # gallery + lightbox + escape
- page.goto(BASE+'/projects');page.get_by_role('button',name='Интерьер',exact=True).click();assert page.locator('.project-card').count()==1
- page.locator('.project-card').click();assert page.locator('dialog').is_visible();page.get_by_role('button',name='Следующий проект').click();page.keyboard.press('Escape');assert not page.locator('dialog').is_visible()
+ page.goto(BASE+'/projects');page.get_by_role('button',name=re.compile(r'^Интерьер(?:\s|$)')).click();assert page.locator('.project-card').count()==1
+ page.get_by_role('button',name=re.compile(r'^Все проекты(?:\s|$)')).click();page.locator('.project-card').first.click();assert page.locator('dialog').is_visible();page.get_by_role('button',name='Следующий проект').click();page.keyboard.press('Escape');assert not page.locator('dialog').is_visible()
  page.screenshot(path='artifacts/projects-mobile.png',full_page=True)
  # form local-only
  page.goto(BASE+'/contacts');posts=[];page.on('request',lambda r:posts.append(r.url) if r.method!='GET' else None)

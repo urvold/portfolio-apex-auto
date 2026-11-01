@@ -1,63 +1,68 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Routes, Route, Link, useLocation, useParams } from 'react-router-dom';
-import { ArrowUpRight, ArrowRight, Menu, X, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
-import { services, projects, faq } from './data';
-import { assetUrl, pagePath } from './paths';
+import { ArrowUpRight, Menu, X, Plus } from 'lucide-react';
+import { services, faq, serviceNotes, calculatorOptions } from './data';
+import { pagePath } from './paths';
+import { Arrow, Label, Button, img, responsive } from './components/ui';
+import { Hero } from './components/Hero';
+import { Anatomy } from './components/Anatomy';
+import { Gallery } from './components/Gallery';
+import { Comparison } from './components/Comparison';
 
-const img = (name: string) => assetUrl(`images/${name}.webp`);
-function responsive(name: string) {
-  return {
-    srcSet: `${assetUrl(`images/${name}-small.webp`)} 800w, ${assetUrl(`images/${name}.webp`)} 1800w`,
-    sizes: '(max-width: 767px) 100vw, 60vw',
-  };
-}
-const Arrow = () => <ArrowUpRight size={19} aria-hidden="true" />;
-function Button({
-  to,
-  children,
-  light = false,
-}: {
-  to: string;
-  children: React.ReactNode;
-  light?: boolean;
-}) {
-  return (
-    <Link className={`button ${light ? 'outline' : ''}`} to={to}>
-      {children}
-      <Arrow />
-    </Link>
-  );
-}
-function Label({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="eyebrow">
-      <span />
-      {children}
-    </div>
-  );
-}
 function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const navigation = useRef<HTMLElement>(null);
   const loc = useLocation();
+  useEffect(() => {
+    const scroll = () => setScrolled(window.scrollY > 24);
+    scroll();
+    window.addEventListener('scroll', scroll, { passive: true });
+    return () => window.removeEventListener('scroll', scroll);
+  }, []);
   useEffect(() => setOpen(false), [loc]);
   useEffect(() => {
     const escape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+        toggle.current?.focus();
+      }
+      if (e.key === 'Tab' && open) {
+        const links = Array.from(
+          navigation.current?.querySelectorAll<HTMLAnchorElement>('a') || [],
+        );
+        const first = links[0];
+        const last = toggle.current;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
     };
     document.addEventListener('keydown', escape);
     document.body.style.overflow = open ? 'hidden' : '';
+    if (open) navigation.current?.querySelector('a')?.focus({ preventScroll: true });
     return () => {
       document.removeEventListener('keydown', escape);
       document.body.style.overflow = '';
     };
   }, [open]);
   return (
-    <header>
+    <header className={scrolled ? 'is-scrolled' : ''}>
       <Link to="/" className="logo">
         APEX<span>AUTO / ESTHETICS</span>
       </Link>
-      <nav aria-label="Основная навигация" className={open ? 'open' : ''}>
+      <nav
+        id="main-navigation"
+        ref={navigation}
+        aria-label="Основная навигация"
+        className={open ? 'open' : ''}
+      >
         {[
           ['/services', 'Услуги'],
           ['/projects', 'Проекты'],
@@ -71,13 +76,24 @@ function Header() {
         <Link className="nav-cta" to="/contacts">
           Обсудить автомобиль <Arrow />
         </Link>
+        <div className="mobile-menu-meta">
+          <span>APEX AUTO / 2.0</span>
+          <p>
+            Концепт автомобильной эстетики.
+            <br />
+            Коммерческие заявки не принимаются.
+          </p>
+        </div>
       </nav>
       <button
+        ref={toggle}
+        aria-controls="main-navigation"
         className="menu-toggle"
         aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
+        <span>{open ? 'Закрыть' : 'Меню'}</span>
         {open ? <X /> : <Menu />}
       </button>
     </header>
@@ -105,51 +121,11 @@ function Footer() {
     </footer>
   );
 }
-function Hero() {
-  return (
-    <section className="hero">
-      <img
-        src={img('hero')}
-        {...responsive('hero')}
-        alt="Светлое спортивное купе в тёмном выставочном пространстве"
-        fetchPriority="high"
-        srcSet={`${assetUrl('images/hero-mobile.webp')} 850w, ${assetUrl('images/hero.webp')} 1800w`}
-        sizes="100vw"
-      />
-      <div className="hero-shade" />
-      <div className="hero-content">
-        <Label>АВТОМОБИЛЬНАЯ ЭСТЕТИКА БЕЗ КОМПРОМИССОВ</Label>
-        <h1>
-          СОВЕРШЕНСТВО
-          <br />В КАЖДОЙ <i>ДЕТАЛИ</i>
-          <span className="red-dot">.</span>
-        </h1>
-        <div className="hero-bottom">
-          <p>Кузовной ремонт, детейлинг и защита автомобиля с вниманием к каждой линии.</p>
-          <div className="actions">
-            <Button to="/services">Наши услуги</Button>
-            <Button to="/contacts" light>
-              Обсудить автомобиль
-            </Button>
-          </div>
-        </div>
-      </div>
-      <div className="hero-caption">
-        <span>01 / ТОЧНОСТЬ. ФОРМА. ХАРАКТЕР.</span>
-        <span>КОНЦЕПТ / ДЕМОНСТРАЦИОННЫЙ ПРОЕКТ</span>
-        <a href="#intro" aria-label="Листайте вниз ↓ — к презентации бренда">
-          Листайте вниз ↓
-        </a>
-      </div>
-      <span className="hero-side">APEX — THE ART OF AUTOMOTIVE CARE</span>
-    </section>
-  );
-}
 function Intro() {
   return (
     <section id="intro" className="intro section">
       <div>
-        <Label>ФИЛОСОФИЯ APEX</Label>
+        <Label>ВНИМАНИЕ — ЭТО МЕТОД</Label>
         <h2>
           Мы возвращаем
           <br />
@@ -173,13 +149,13 @@ function Intro() {
       <figure>
         <img
           loading="lazy"
-          src={img('detail')}
-          {...responsive('detail')}
-          alt="Графитовое спортивное купе на фоне горного пейзажа"
+          src={img('workshop')}
+          {...responsive('workshop', '(max-width: 600px) 100vw, 40vw')}
+          alt="Мастер выполняет полировку кузова машинкой"
         />
         <figcaption>
           <span>КРАСОТА — В ТОЧНОСТИ</span>
-          <span>APEX / 001</span>
+          <span>ИЛЛЮСТРАЦИЯ ПРОЦЕССА</span>
         </figcaption>
       </figure>
     </section>
@@ -187,14 +163,13 @@ function Intro() {
 }
 function ServiceGrid({ all = false }: { all?: boolean }) {
   return (
-    <section className="section service-section">
+    <section className={`section service-section ${all ? 'all-services' : 'home-services'}`}>
       <div className="section-heading">
         <div>
-          <Label>ЭКСПЕРТИЗА</Label>
-          <h2>
-            Искусство
-            <br />
-            <em>совершенства.</em>
+          <Label>02 / НАПРАВЛЕНИЯ РАБОТЫ</Label>
+          <h2 className={all ? 'sr-only' : ''}>
+            Точность —<br />
+            <em>наша специализация.</em>
           </h2>
         </div>
         <p>
@@ -206,7 +181,17 @@ function ServiceGrid({ all = false }: { all?: boolean }) {
       <div className="service-grid">
         {services.map((s, i) => (
           <Link className={`service-card service-${i}`} to={`/services/${s.slug}`} key={s.slug}>
-            <img src={img(s.image)} {...responsive(s.image)} loading="lazy" alt="" />
+            <img
+              src={img(s.image)}
+              {...responsive(
+                s.image,
+                all || i === 0
+                  ? '(max-width: 600px) 100vw, 50vw'
+                  : '(max-width: 600px) 82px, 104px',
+              )}
+              loading="lazy"
+              alt=""
+            />
             <div className="card-shade" />
             <div className="card-top">
               <span>0{i + 1} / APEX CARE</span>
@@ -230,189 +215,10 @@ function ServiceGrid({ all = false }: { all?: boolean }) {
     </section>
   );
 }
-function Gallery({ full = false }: { full?: boolean }) {
-  const [filter, setFilter] = useState('all');
-  const [active, setActive] = useState<number | null>(null);
-  const dialog = useRef<HTMLDialogElement>(null);
-  const list = projects.filter((p) => filter === 'all' || p.type === filter);
-  useEffect(() => {
-    if (active !== null) dialog.current?.showModal();
-    else dialog.current?.close();
-  }, [active]);
-  function close() {
-    setActive(null);
-  }
-  return (
-    <section className="section gallery">
-      <div className="section-heading">
-        <div>
-          <Label>ИЗБРАННЫЕ ПРОЕКТЫ</Label>
-          <h2>
-            Детали решают <em>всё.</em>
-          </h2>
-        </div>
-        <p>
-          Визуальные истории APEX.
-          <br />
-          Все проекты — демонстрационные.
-        </p>
-      </div>
-      <div className="filters" aria-label="Фильтр проектов">
-        {[
-          ['all', 'Все проекты'],
-          ['polishing', 'Полировка'],
-          ['film', 'Защита'],
-          ['interior', 'Интерьер'],
-          ['coatings', 'Покрытия'],
-        ].map(([id, name]) => (
-          <button
-            aria-pressed={id === filter}
-            className={id === filter ? 'active' : ''}
-            onClick={() => setFilter(id)}
-            key={id}
-          >
-            {name}
-          </button>
-        ))}
-      </div>
-      <div className="project-grid">
-        {list.slice(0, full ? 4 : 2).map((p) => (
-          <button
-            className="project-card"
-            key={p.title}
-            onClick={() => setActive(projects.indexOf(p))}
-          >
-            <div className="project-image">
-              <img loading="lazy" src={img(p.image)} {...responsive(p.image)} alt={p.car} />
-              <span>ДЕМО-ПРОЕКТ</span>
-              <span className="project-open">
-                <Plus size={24} />
-              </span>
-            </div>
-            <div className="project-title">
-              <div>
-                <h3>{p.title}</h3>
-                <p>{p.car}</p>
-              </div>
-              <Arrow />
-            </div>
-          </button>
-        ))}
-      </div>
-      {!full && (
-        <div className="section-end">
-          <span>Вдохновение для вашего следующего проекта.</span>
-          <Link className="text-link" to="/projects">
-            Смотреть все проекты <Arrow />
-          </Link>
-        </div>
-      )}
-      <dialog
-        ref={dialog}
-        onKeyDown={(e) => {
-          if (active === null) return;
-          if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            setActive((active + 1) % projects.length);
-          }
-          if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            setActive((active + projects.length - 1) % projects.length);
-          }
-        }}
-        onCancel={close}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) close();
-        }}
-        className="lightbox"
-      >
-        {active !== null && (
-          <>
-            <button className="close-modal" onClick={close} aria-label="Закрыть просмотр">
-              <X />
-            </button>
-            <img
-              src={img(projects[active].image)}
-              {...responsive(projects[active].image)}
-              alt={projects[active].car}
-            />
-            <div className="lightbox-bottom">
-              <button
-                onClick={() => setActive((active + projects.length - 1) % projects.length)}
-                aria-label="Предыдущий проект"
-              >
-                <ChevronLeft />
-              </button>
-              <div>
-                <h3>{projects[active].title}</h3>
-                <p>{projects[active].text} Демонстрационный проект.</p>
-              </div>
-              <button
-                onClick={() => setActive((active + 1) % projects.length)}
-                aria-label="Следующий проект"
-              >
-                <ChevronRight />
-              </button>
-            </div>
-          </>
-        )}
-      </dialog>
-    </section>
-  );
-}
-function Comparison() {
-  const [value, setValue] = useState(52);
-  return (
-    <section className="section compare-section">
-      <div className="section-heading">
-        <div>
-          <Label>СМЕНА ПЕРСПЕКТИВЫ</Label>
-          <h2>
-            Разница —<br />
-            <em>в отражении.</em>
-          </h2>
-        </div>
-        <p>
-          Передвиньте разделитель.
-          <br />
-          Цифровая симуляция на одном кадре,
-          <br />а не реальный результат работ.
-        </p>
-      </div>
-      <div className="comparison">
-        <img
-          src={img('black')}
-          {...responsive('black')}
-          alt="Исходный кадр графитового спортивного автомобиля"
-        />
-        <div className="before-image" style={{ clipPath: `inset(0 ${100 - value}% 0 0)` }}>
-          <img
-            src={img('black')}
-            {...responsive('black')}
-            alt="Тот же кадр с приглушённым цветом для демонстрации"
-          />
-        </div>
-        <span className="compare-tag before">ДО / СИМУЛЯЦИЯ</span>
-        <span className="compare-tag after">ПОСЛЕ / СИМУЛЯЦИЯ</span>
-        <div className="compare-line" style={{ left: `${value}%` }}>
-          <span>↔</span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={value}
-          onChange={(e) => setValue(+e.target.value)}
-          aria-label="Сравнение изображения до и после цифровой обработки"
-        />
-      </div>
-    </section>
-  );
-}
 function Process() {
   return (
     <section className="process section">
-      <Label>ПОНЯТНЫЙ ПРОЦЕСС</Label>
+      <Label>05 / ПРОЦЕСС БЕЗ ЛИШНИХ ДВИЖЕНИЙ</Label>
       <h2>
         От диалога
         <br />к <em>совершенству.</em>
@@ -441,30 +247,34 @@ function Calculator() {
   const [s, setS] = useState(0);
   const [category, setCategory] = useState(1);
   const [options, setOptions] = useState<string[]>([]);
-  const opts = [
-    ['wash', 'Детальная мойка', 3000],
-    ['wheels', 'Очистка колёсных дисков', 4000],
-    ['care', 'Уход за кожей салона', 5000],
-  ] as const;
+  const opts = calculatorOptions;
   const total =
     Math.round(services[s].price * category) +
     opts.filter((o) => options.includes(o[0])).reduce((sum, o) => sum + o[2], 0);
   return (
     <section className="section calculator">
       <div>
-        <Label>ВАШ СЛЕДУЮЩИЙ ШАГ</Label>
+        <Label>06 / ОРИЕНТИР ПО БЮДЖЕТУ</Label>
         <h2>
-          Начните
-          <br />с <em>понимания.</em>
+          Ваш автомобиль.
+          <br />
+          <em>Ваш сценарий.</em>
         </h2>
         <p className="muted">
           Оцените порядок бюджета.
           <br />
           Выберите услугу и параметры автомобиля.
         </p>
-        <span className="small-index">ЛОКАЛЬНЫЙ РАСЧЁТ / БЕЗ ОТПРАВКИ ДАННЫХ</span>
+        <div className="calc-assurance">
+          <span>01 / Открытые демонстрационные тарифы</span>
+          <span>02 / Прозрачная формула расчёта</span>
+          <span>03 / Всё происходит в вашем браузере</span>
+        </div>
+        <a href="#calc-options" className="text-link">
+          Выбрать параметры <Arrow />
+        </a>
       </div>
-      <div className="calc-panel">
+      <div className="calc-panel" id="calc-options">
         <label>
           01 / Услуга
           <select value={s} onChange={(e) => setS(+e.target.value)}>
@@ -567,6 +377,18 @@ function Home() {
   return (
     <>
       <Hero />
+      <div className="brand-rail" aria-hidden="true">
+        <span>
+          RESTORE <ArrowUpRight aria-hidden="true" size={24} />
+        </span>
+        <span>
+          REFINE <ArrowUpRight aria-hidden="true" size={24} />
+        </span>
+        <span>
+          PROTECT <ArrowUpRight aria-hidden="true" size={24} />
+        </span>
+      </div>
+      <Anatomy />
       <Intro />
       <ServiceGrid />
       <Gallery />
@@ -581,6 +403,9 @@ function Home() {
 function PageHead({ label, title, text }: { label: string; title: string; text: string }) {
   return (
     <section className="page-head section">
+      <div className="page-head-marker" aria-hidden="true">
+        A<span>APEX / ESTHETICS</span>
+      </div>
       <Label>{label}</Label>
       <h1>{title}</h1>
       <p>{text}</p>
@@ -609,7 +434,12 @@ function ServicePage() {
   return (
     <>
       <section className="service-hero">
-        <img src={img(s.image)} {...responsive(s.image)} alt={s.title} />
+        <img
+          src={img(s.image)}
+          {...responsive(s.image, '100vw')}
+          alt={s.title}
+          fetchPriority="high"
+        />
         <div>
           <Link className="text-link" to="/services">
             ← Все услуги
@@ -617,6 +447,9 @@ function ServicePage() {
           <Label>APEX / НАПРАВЛЕНИЕ</Label>
           <h1>{s.title}</h1>
           <p>{s.short}</p>
+          <div className="service-hero-action">
+            <Button to="/contacts">Обсудить задачу</Button>
+          </div>
         </div>
       </section>
       <section className="section service-detail">
@@ -648,6 +481,21 @@ function ServicePage() {
             </div>
           ))}
         </div>
+      </section>
+      <section className="section service-note">
+        <div>
+          <Label>ВАЖНЫЕ ДЕТАЛИ</Label>
+          <h2>{serviceNotes[s.slug].title}</h2>
+          <p>{serviceNotes[s.slug].care}</p>
+        </div>
+        <ul>
+          {serviceNotes[s.slug].points.map((point, i) => (
+            <li key={point}>
+              <span>0{i + 1}</span>
+              {point}
+            </li>
+          ))}
+        </ul>
       </section>
       <FAQ />
       <CTA />
@@ -700,8 +548,8 @@ function Contacts() {
     <>
       <PageHead
         label="APEX / ДИАЛОГ"
-        title="Начнём с вашего автомобиля."
-        text="Демонстрация первого знакомства со студией. APEX AUTO — вымышленный бренд, коммерческие заявки здесь не принимаются."
+        title="Обсудим автомобиль."
+        text="Демо-форма вымышленной студии. Данные никуда не отправляются и не сохраняются."
       />
       <section className="section contact-layout">
         <div>
@@ -723,6 +571,16 @@ function Contacts() {
           </div>
         </div>
         <form
+          onKeyDown={(e) => {
+            if (
+              e.key === 'Enter' &&
+              e.target instanceof HTMLInputElement &&
+              !e.nativeEvent.isComposing
+            ) {
+              e.preventDefault();
+              e.currentTarget.requestSubmit();
+            }
+          }}
           onSubmit={(e) => {
             e.preventDefault();
             e.currentTarget.reset();
@@ -766,7 +624,11 @@ function Contacts() {
           <p className="fineprint">
             Отправка имитируется локально. Настоящие контактные данные не нужны.
           </p>
-          <button className="button" type="button" onClick={(e) => e.currentTarget.form?.requestSubmit()}>
+          <button
+            className="button"
+            type="button"
+            onClick={(e) => e.currentTarget.form?.requestSubmit()}
+          >
             Показать демо-отправку <Arrow />
           </button>
           {sent && (
@@ -791,8 +653,14 @@ function NotFound() {
 export function App() {
   const loc = useLocation();
   const path = loc.pathname.replace(/\/+$/, '') || '/';
+  const previousPath = useRef(path);
+  const transitioning = previousPath.current !== path;
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (previousPath.current !== path) {
+      document.getElementById('main')?.focus({ preventScroll: true });
+      previousPath.current = path;
+    }
     const service = services.find((s) => path === `/services/${s.slug}`);
     const title =
       service?.title ||
@@ -824,16 +692,19 @@ export function App() {
       (entries) =>
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
+            entry.target.classList.add('is-revealed');
             observer.unobserve(entry.target);
           }
         }),
       { threshold: 0.12 },
     );
-    document.querySelectorAll('.process-grid article,.manifesto article').forEach((el) => {
-      el.classList.add('reveal-ready');
-      observer.observe(el);
-    });
+    document
+      .querySelectorAll(
+        '.section-heading,.intro figure,.process-grid article,.manifesto article,.service-note',
+      )
+      .forEach((el) => {
+        observer.observe(el);
+      });
     return () => observer.disconnect();
   }, [path]);
   return (
@@ -842,7 +713,7 @@ export function App() {
         Перейти к содержимому
       </a>
       <Header />
-      <main id="main" key={path}>
+      <main id="main" key={path} className={transitioning ? 'route-enter' : ''} tabIndex={-1}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />

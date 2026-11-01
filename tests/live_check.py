@@ -93,11 +93,11 @@ with sync_playwright() as p:
     slider = page.get_by_role('slider')
     slider.focus()
     slider.press('ArrowRight')
-    assert slider.input_value() == '53'
+    assert slider.get_attribute('aria-valuenow') == '53'
     page.locator('summary').first.click()
     assert page.locator('details').first.get_attribute('open') is not None
     page.goto(BASE + '/projects/')
-    page.get_by_role('button', name='Интерьер', exact=True).click()
+    page.get_by_role('button', name=re.compile(r'^Интерьер(?:\s|$)')).click()
     assert page.locator('.project-card').count() == 1
     page.locator('.project-card').click()
     assert page.locator('dialog').is_visible()
