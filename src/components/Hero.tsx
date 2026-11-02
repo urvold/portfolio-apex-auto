@@ -44,9 +44,9 @@ export function Hero() {
       </div>
       <div className="hero-shade" />
       <div className="hero-grid" aria-hidden="true">
-        <span>01 — FORM</span>
-        <span>02 — FINISH</span>
-        <span>03 — FEELING</span>
+        <span>01 — ФОРМА</span>
+        <span>02 — ПОКРЫТИЕ</span>
+        <span>03 — ОЩУЩЕНИЯ</span>
       </div>
       <div className="hero-content">
         <Label>APEX AUTO / ИСКУССТВО АВТОМОБИЛЬНОЙ ЭСТЕТИКИ</Label>
@@ -81,9 +81,8 @@ export function Hero() {
       <div className="hero-stamp" aria-hidden="true">
         A
         <span>
-          PRECISION
-          <br />
-          IN EVERY LINE
+          ТОЧНОСТЬ
+          <br />В КАЖДОЙ ЛИНИИ
         </span>
       </div>
     </section>

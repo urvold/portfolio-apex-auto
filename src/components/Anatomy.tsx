@@ -45,7 +45,7 @@ export function Anatomy() {
       <div className="anatomy-product">
         <div className="anatomy-visual">
           <div className="anatomy-toolbar">
-            <span>APEX / DETAIL EXPLORER</span>
+            <span>APEX / ИНТЕРАКТИВНЫЙ ОБЗОР</span>
             <button onClick={() => setPhoto(!photo)} aria-pressed={photo}>
               {photo ? <ScanLine size={17} /> : <Sun size={17} />}
               {photo ? 'Контур' : 'Фотография'}

@@ -21,13 +21,18 @@ with sync_playwright() as p:
  touch('touchEnd');assert len(set(samples))>=10,samples;assert samples==sorted(samples),samples;assert 74<=samples[-1]<=78,samples
  assert not slider.evaluate('(el)=>el.hasPointerCapture(window.__pointerID)')
  assert slider.locator('.compare-line').evaluate('(el)=>getComputedStyle(el).transitionDuration')=='0s'
- # A vertical gesture must scroll, cancel pointer handling, and leave the widget usable.
+ # Gestures starting inside stay captured even when diagonal/vertical; outside still scrolls.
  slider.scroll_into_view_if_needed();box=slider.bounding_box();y=box['y']+box['height']*.6;x=box['x']+box['width']*.5;before=page.evaluate('scrollY')
  touch('touchStart',x,y)
- for i in range(1,9):touch('touchMove',x,y-i*15)
+ for i in range(1,9):touch('touchMove',x,y-i*10)
+ touch('touchEnd');page.wait_for_timeout(80)
+ assert abs(page.evaluate('scrollY')-before)<=1,'comparison gesture scrolled page'
+ assert slider.get_attribute('aria-valuenow')=='50'
+ assert page.evaluate('document.body.style.overflow')!='hidden'
+ touch('touchStart',x,160)
+ for i in range(1,9):touch('touchMove',x,160-i*12)
  touch('touchEnd');page.wait_for_timeout(100)
- assert abs(page.evaluate('scrollY')-before)>20,'vertical scroll was blocked'
- assert 'pointercancel' in page.evaluate('window.__pointerEvents')
+ assert abs(page.evaluate('scrollY')-before)>20,'outside vertical scroll was blocked'
  # Mouse capture continues outside component bounds and clamps at both ends.
  slider.scroll_into_view_if_needed();box=slider.bounding_box();y=box['y']+box['height']*.4
  page.mouse.move(box['x']+box['width']*.5,y);page.mouse.down();page.mouse.move(box['x']+box['width']+80,y,steps=8);assert slider.get_attribute('aria-valuenow')=='100'
@@ -60,6 +65,6 @@ with sync_playwright() as p:
  page.emulate_media(reduced_motion='reduce');page.goto(BASE+'/');page.evaluate('scrollTo(0,200)');page.wait_for_timeout(80)
  assert page.locator('.hero-image').evaluate('(el)=>getComputedStyle(el).transform')=='none';assert page.locator('main').evaluate('(el)=>getComputedStyle(el).animationName')=='none';assert page.get_by_role('tabpanel').is_visible()
  assert not errors,errors
- Path('artifacts/v2/interactions.json').write_text(json.dumps({'touchSamples':samples,'continuousTouch':True,'pointerCapture':True,'verticalScroll':True,'mouseClamp':True,'keyboard':True,'anatomyAreas':headings,'galleryProjects':7,'galleryTouchSwipe':True,'reducedMotion':True,'errors':errors},ensure_ascii=False,indent=2))
+ Path('artifacts/v2/interactions.json').write_text(json.dumps({'touchSamples':samples,'continuousTouch':True,'pointerCapture':True,'outsideVerticalScroll':True,'insideGestureScrollLocked':True,'mouseClamp':True,'keyboard':True,'anatomyAreas':headings,'galleryProjects':7,'galleryTouchSwipe':True,'reducedMotion':True,'errors':errors},ensure_ascii=False,indent=2))
  browser.close()
 print('PASS: continuous touch + pointer capture, vertical scrolling, mouse and keyboard, six anatomy areas, seven projects, filtered gallery/swipe/focus, menu and reduced motion.')

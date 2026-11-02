@@ -166,7 +166,7 @@ export function Gallery({ full = false }: { full?: boolean }) {
           <>
             <div className="lightbox-top">
               <span>
-                APEX / VISUAL ARCHIVE{' '}
+                APEX / АРХИВ ПРОЕКТОВ{' '}
                 <b>
                   {String((active ?? 0) + 1).padStart(2, '0')} —{' '}
                   {String(list.length).padStart(2, '0')}

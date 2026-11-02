@@ -55,7 +55,8 @@ function Header() {
   return (
     <header className={scrolled ? 'is-scrolled' : ''}>
       <Link to="/" className="logo">
-        APEX<span>AUTO / ESTHETICS</span>
+        APEX<small className="logo-auto">AUTO</small>
+        <span>АВТОМОБИЛЬНАЯ ЭСТЕТИКА</span>
       </Link>
       <nav
         id="main-navigation"
@@ -194,7 +195,7 @@ function ServiceGrid({ all = false }: { all?: boolean }) {
             />
             <div className="card-shade" />
             <div className="card-top">
-              <span>0{i + 1} / APEX CARE</span>
+              <span>0{i + 1} / УХОД APEX</span>
               <Arrow />
             </div>
             <div className="card-bottom">
@@ -379,13 +380,13 @@ function Home() {
       <Hero />
       <div className="brand-rail" aria-hidden="true">
         <span>
-          RESTORE <ArrowUpRight aria-hidden="true" size={24} />
+          ВОССТАНОВИТЬ <ArrowUpRight aria-hidden="true" size={24} />
         </span>
         <span>
-          REFINE <ArrowUpRight aria-hidden="true" size={24} />
+          УЛУЧШИТЬ <ArrowUpRight aria-hidden="true" size={24} />
         </span>
         <span>
-          PROTECT <ArrowUpRight aria-hidden="true" size={24} />
+          ЗАЩИТИТЬ <ArrowUpRight aria-hidden="true" size={24} />
         </span>
       </div>
       <Anatomy />
@@ -404,7 +405,7 @@ function PageHead({ label, title, text }: { label: string; title: string; text: 
   return (
     <section className="page-head section">
       <div className="page-head-marker" aria-hidden="true">
-        A<span>APEX / ESTHETICS</span>
+        A<span>APEX / АВТОМОБИЛЬНАЯ ЭСТЕТИКА</span>
       </div>
       <Label>{label}</Label>
       <h1>{title}</h1>

@@ -16,15 +16,22 @@ export function Comparison() {
   function down(e: PointerEvent<HTMLDivElement>) {
     if (!e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
     dragging.current = e.pointerId;
-    e.currentTarget.setPointerCapture(e.pointerId);
+    if (typeof e.currentTarget.setPointerCapture === 'function') {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
     e.currentTarget.focus({ preventScroll: true });
     position(e.clientX);
   }
   function end(e: PointerEvent<HTMLDivElement>) {
     if (dragging.current !== e.pointerId) return;
     dragging.current = null;
-    if (e.currentTarget.hasPointerCapture(e.pointerId))
+    if (
+      typeof e.currentTarget.hasPointerCapture === 'function' &&
+      e.currentTarget.hasPointerCapture(e.pointerId) &&
+      typeof e.currentTarget.releasePointerCapture === 'function'
+    ) {
       e.currentTarget.releasePointerCapture(e.pointerId);
+    }
   }
   function key(e: KeyboardEvent) {
     const step = e.shiftKey ? 10 : 1;
@@ -77,6 +84,7 @@ export function Comparison() {
         aria-valuetext={`Зона «До»: ${Math.round(value)} процентов`}
         aria-orientation="horizontal"
         tabIndex={0}
+        onDragStart={(e) => e.preventDefault()}
         onPointerDown={down}
         onPointerMove={(e) => {
           if (dragging.current === e.pointerId) position(e.clientX);
@@ -120,7 +128,7 @@ export function Comparison() {
         <span>
           <MoveHorizontal size={19} /> Потяните пальцем или мышью
         </span>
-        <span>Клавиатура: ← → / Home / End</span>
+        <span>Клавиатура: стрелки ← →</span>
       </div>
     </section>
   );
