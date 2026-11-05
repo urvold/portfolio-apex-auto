@@ -148,6 +148,9 @@ function Intro() {
         </div>
       </div>
       <figure>
+        <p className="intro-photo-title">
+          МАСТЕРСТВО<br />В КАЖДОЙ ДЕТАЛИ
+        </p>
         <img
           loading="lazy"
           src={img('workshop')}
@@ -378,16 +381,16 @@ function Home() {
   return (
     <>
       <Hero />
-      <div className="brand-rail" aria-hidden="true">
-        <span>
+      <div className="brand-rail" role="navigation" aria-label="Направления ухода за автомобилем">
+        <Link to="/services/bodywork">
           ВОССТАНОВИТЬ <ArrowUpRight aria-hidden="true" size={24} />
-        </span>
-        <span>
+        </Link>
+        <Link to="/services/polishing">
           УЛУЧШИТЬ <ArrowUpRight aria-hidden="true" size={24} />
-        </span>
-        <span>
+        </Link>
+        <Link to="/services/film">
           ЗАЩИТИТЬ <ArrowUpRight aria-hidden="true" size={24} />
-        </span>
+        </Link>
       </div>
       <Anatomy />
       <Intro />

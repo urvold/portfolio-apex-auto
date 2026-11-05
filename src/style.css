@@ -466,14 +466,15 @@ nav > a:hover {
   color: #d8d8d8;
 }
 .brand-rail {
-  background: var(--red);
-  color: #101114;
-  display: flex;
-  justify-content: space-between;
-  padding: 20px var(--gutter);
-  gap: 25px;
+  background: #191b1f;
+  color: #f2f0eb;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0 var(--gutter);
+  gap: 0;
+  border-block: 1px solid #ffffff1a;
 }
-.brand-rail > span {
+.brand-rail > a {
   font-size: clamp(22px, 2.8vw, 44px);
   font-weight: 600;
   letter-spacing: -0.04em;
@@ -775,19 +776,16 @@ nav > a:hover {
   filter: saturate(0.6);
   object-position: 55% 40%;
 }
-.intro figure:before {
-  content: 'МАСТЕРСТВО\A В КАЖДОЙ ДЕТАЛИ';
-  white-space: pre;
-  position: absolute;
-  left: -34px;
-  top: 25px;
-  z-index: 1;
-  background: var(--red);
-  color: #101114;
-  padding: 18px;
+.intro-photo-title {
+  align-self: flex-start;
+  margin: 0 0 18px;
+  padding-top: 14px;
+  border-top: 1px solid #b9bbb6;
+  color: #24262b;
   font-size: 14px;
   font-weight: 600;
-  line-height: 1.35;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
 }
 .intro figcaption {
   display: flex;
@@ -2168,11 +2166,6 @@ form .button {
   .intro figure img {
     height: 480px;
   }
-  .intro figure:before {
-    left: -22px;
-    font-size: 12px;
-    padding: 14px;
-  }
   .section-heading {
     gap: 30px;
   }
@@ -2471,7 +2464,7 @@ form .button {
     padding: 17px var(--gutter);
     gap: 16px;
   }
-  .brand-rail > span {
+  .brand-rail > a {
     font-size: 19px;
     gap: 8px;
   }
@@ -2595,17 +2588,11 @@ form .button {
     margin: 16px 0;
   }
   .intro figure {
-    margin-left: 28px;
+    margin-left: 0;
   }
   .intro figure img {
     height: 330px;
     object-position: 50% 35%;
-  }
-  .intro figure:before {
-    top: 20px;
-    left: -28px;
-    font-size: 12px;
-    padding: 14px;
   }
   .intro figcaption {
     font-size: 9px;
@@ -3215,7 +3202,7 @@ form .button {
   .brand-rail {
     gap: 9px;
   }
-  .brand-rail > span {
+  .brand-rail > a {
     font-size: 16px;
     gap: 6px;
   }
@@ -3536,7 +3523,7 @@ main:focus {
     grid-row: 2;
   }
 }
-.brand-rail > span > svg {
+.brand-rail > a > svg {
   width: clamp(17px, 2.2vw, 32px);
   height: auto;
   flex: none;
@@ -3555,8 +3542,32 @@ main:focus {
     opacity: 1;
   }
 }
-.brand-rail {
-  color: #080a0d;
+.brand-rail > a {
+  min-height: 104px;
+  padding: 22px 24px;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+.brand-rail > a:first-child {
+  padding-left: 0;
+}
+.brand-rail > a:last-child {
+  padding-right: 0;
+}
+.brand-rail > a + a {
+  border-left: 1px solid #ffffff1a;
+}
+.brand-rail > a:hover {
+  background-color: #24262b;
+  color: #fff;
+}
+.brand-rail > a:focus-visible {
+  outline: 2px solid #f2f0eb;
+  outline-offset: -4px;
+}
+.brand-rail > a > svg {
+  color: #a4a6ab;
 }
 .anatomy-tabs button[aria-selected='true'] > span {
   color: #55585e;
@@ -3598,8 +3609,8 @@ main:focus {
 .logo > span {
   letter-spacing: 1.2px;
 }
-.brand-rail > span {
-  font-size: clamp(18px, 2.5vw, 36px);
+.brand-rail > a {
+  font-size: clamp(18px, 2vw, 29px);
   gap: clamp(12px, 2vw, 30px);
 }
 .anatomy-toolbar > span {
@@ -3625,17 +3636,18 @@ main:focus {
     gap: 0;
     padding: 6px var(--gutter);
   }
-  .brand-rail > span {
+  .brand-rail > a {
     justify-content: space-between;
-    min-height: 47px;
-    padding: 10px 0;
+    min-height: 60px;
+    padding: 16px 0;
     font-size: 20px;
     gap: 18px;
   }
-  .brand-rail > span + span {
-    border-top: 1px solid #1011144d;
+  .brand-rail > a + a {
+    border-top: 1px solid #ffffff1a;
+    border-left: 0;
   }
-  .brand-rail > span > svg {
+  .brand-rail > a > svg {
     width: 21px;
   }
   .anatomy-toolbar {
